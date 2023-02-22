@@ -3,6 +3,7 @@ import Home from "components/icons/Home";
 import User2 from "components/icons/User2";
 import CategoryOutlined from "components/icons/CategoryOutline";
 import ShoppingBagOutlined from "components/icons/ShoppingBagOutlined";
+
 import useWindowSize from "hooks/useWindowSize";
 import { useAppContext } from "contexts/AppContext";
 import { iconStyle, StyledNavLink, Wrapper } from "./styles";
@@ -12,14 +13,14 @@ const MobileNavigationBar = () => {
   const { state } = useAppContext();
   return width <= 900 ? (
     <Wrapper>
-      {list.map((item) => (
+      {list.map(item => (
         <StyledNavLink href={item.href} key={item.title}>
           {item.title === "Cart" ? (
-            <Badge badgeContent={state.cart.length} color="primary">
-              <item.icon fontSize="small" sx={iconStyle} />
+            <Badge badgeContent={state.cart.length} color='primary'>
+              <item.icon fontSize='small' sx={iconStyle} />
             </Badge>
           ) : (
-            <item.icon sx={iconStyle} fontSize="small" />
+            <item.icon sx={iconStyle} fontSize='small' />
           )}
 
           {item.title}
@@ -31,22 +32,22 @@ const MobileNavigationBar = () => {
 
 const list = [
   {
-    title: "Home",
+    title: "홈 ",
     icon: Home,
     href: "/",
   },
   {
-    title: "Category",
-    icon: CategoryOutlined,
-    href: "/mobile-category-nav",
-  },
-  {
-    title: "Cart",
+    title: "내책판매",
     icon: ShoppingBagOutlined,
-    href: "/cart",
+    href: "/my/create",
   },
+  // {
+  //   title: "Cart",
+  //   icon: ShoppingBagOutlined,
+  //   href: "/cart",
+  // },
   {
-    title: "Account",
+    title: "내정보",
     icon: User2,
     href: "/profile",
   },

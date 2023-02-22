@@ -1,18 +1,35 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Pagination } from "@mui/material";
-import { Button } from "@mui/material";
-import { ShoppingBag } from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  Chip,
+  IconButton,
+  styled,
+  Typography,
+} from "@mui/material";
+import { East, Place, ShoppingBag } from "@mui/icons-material";
 import TableRow from "components/TableRow";
-import { H5 } from "components/Typography";
+import { H5, Span } from "components/Typography";
 import { FlexBox } from "components/flex-box";
-import SellBookRow from "pages-sections/orders/SellBookRow";
 import UserDashboardHeader from "components/header/UserDashboardHeader";
 import CustomerDashboardLayout from "components/layouts/customer-dashboard";
 import CustomerDashboardNavigation from "components/layouts/customer-dashboard/Navigations";
 import { withAuth } from "../../hocs/withAuth ";
 
 // ====================================================
+// styled components
+const StyledChip = styled(Chip)(({ theme, green }) => ({
+  height: 26,
+  margin: "6px",
+  padding: " 0 0.25rem",
+  color: green ? theme.palette.success.main : theme.palette.primary.main,
+  backgroundColor: green
+    ? theme.palette.success[100]
+    : theme.palette.primary.light,
+}));
+
 const Orders = () => {
   let linkArr;
   if (process.browser) {
@@ -61,52 +78,45 @@ const Orders = () => {
         navigation={<CustomerDashboardNavigation />}
       />
 
-      {/* ORDER LIST AREA */}
-      <TableRow
-        elevation={0}
-        sx={{
-          padding: "0px 18px",
-          background: "none",
-          display: {
-            xs: "none",
-            md: "flex",
-          },
-        }}
-      >
-        <H5 color='grey.600' my={0} mx={0.75} textAlign='left'>
-          등록번호 #
-        </H5>
-
-        <H5 color='grey.600' my={0} mx={0.5} textAlign='center'>
-          제목
-        </H5>
-
-        <H5 color='grey.600' my={0} mx={0.75} textAlign='center'>
-          가격
-        </H5>
-
-        <H5 color='grey.600' my={0} mx={0.75} textAlign='left'>
-          매장
-        </H5>
-
-        <H5 color='grey.600' my={0} mx={0.75} textAlign='center'>
-          상태
-        </H5>
-
-        <H5
-          my={0}
-          px={2.75}
-          color='grey.600'
-          flex='0 0 0 !important'
-          display={{
-            xs: "none",
-            md: "block",
-          }}
-        />
-      </TableRow>
-
       {data ? (
-        data.map(order => <SellBookRow order={order} key={order.trade_uid} />)
+        data.map(item => (
+          <TableRow
+            key={item.trade_uid}
+            sx={{
+              my: "1rem",
+              p: "15px 24px",
+            }}
+          >
+            <Box>
+              <span>{item.title}</span>
+              <Span m={0.75} color='grey.600'>
+                | {item.sell_price}원
+              </Span>
+              <FlexBox alignItems='center' flexWrap='wrap' pt={1} m={-0.75}>
+                {/* <StyledChip label={item.shop_name} size='small' /> */}
+                <StyledChip label={item.sell_state} size='small' green={1} />
+
+                {/* <Span className='pre' m={0.75} color='grey.600'>
+                  {format(new Date(item.date), "MMM dd, yyyy")}
+                </Span> */}
+
+                <Span m={0.75} color='grey.600'>
+                  <Place fontSize='small' color='inherit' /> {item.shop_name}
+                </Span>
+              </FlexBox>
+            </Box>
+
+            <Typography
+              flex='0 0 0 !important'
+              textAlign='center'
+              color='grey.600'
+            >
+              <IconButton>
+                <East fontSize='small' color='inherit' />
+              </IconButton>
+            </Typography>
+          </TableRow>
+        ))
       ) : (
         <H5>Loading...</H5>
       )}

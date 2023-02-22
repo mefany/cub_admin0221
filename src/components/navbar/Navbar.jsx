@@ -88,7 +88,7 @@ const Navbar = ({ navListOpen, hideCategories, elevation, border }) => {
   const { settings } = useSettings();
 
   const renderNestedNav = (list = [], isRoot = false) => {
-    return list.map((nav) => {
+    return list.map(nav => {
       if (isRoot) {
         // show megamenu
         if (nav.megaMenu) {
@@ -117,9 +117,9 @@ const Navbar = ({ navListOpen, hideCategories, elevation, border }) => {
           return (
             <FlexBox
               key={nav.title}
-              alignItems="center"
-              position="relative"
-              flexDirection="column"
+              alignItems='center'
+              position='relative'
+              flexDirection='column'
               sx={{
                 "&:hover": {
                   "& > .child-nav-item": {
@@ -128,7 +128,7 @@ const Navbar = ({ navListOpen, hideCategories, elevation, border }) => {
                 },
               }}
             >
-              <FlexBox alignItems="flex-end" gap={0.3} sx={navLinkStyle}>
+              <FlexBox alignItems='flex-end' gap={0.3} sx={navLinkStyle}>
                 {nav.title}{" "}
                 <KeyboardArrowDown
                   sx={{
@@ -138,7 +138,7 @@ const Navbar = ({ navListOpen, hideCategories, elevation, border }) => {
                 />
               </FlexBox>
 
-              <ChildNavsWrapper className="child-nav-item">
+              <ChildNavsWrapper className='child-nav-item'>
                 <BazaarCard
                   elevation={3}
                   sx={{
@@ -164,20 +164,20 @@ const Navbar = ({ navListOpen, hideCategories, elevation, border }) => {
 
         if (nav.child) {
           return (
-            <ParentNav position="relative" minWidth="230px" key={nav.title}>
-              <MenuItem color="grey.700">
-                <Box flex="1 1 0" component="span">
+            <ParentNav position='relative' minWidth='230px' key={nav.title}>
+              <MenuItem color='grey.700'>
+                <Box flex='1 1 0' component='span'>
                   {nav.title}
                 </Box>
 
                 {settings.direction === "ltr" ? (
-                  <ArrowRight fontSize="small" />
+                  <ArrowRight fontSize='small' />
                 ) : (
-                  <ArrowLeft fontSize="small" />
+                  <ArrowLeft fontSize='small' />
                 )}
               </MenuItem>
 
-              <ParentNavItem className="parent-nav-item">
+              <ParentNavItem className='parent-nav-item'>
                 <BazaarCard
                   sx={{
                     py: "0.5rem",
@@ -201,22 +201,22 @@ const Navbar = ({ navListOpen, hideCategories, elevation, border }) => {
         <InnerContainer>
           {/* Category megamenu */}
           <CategoryMenu open={navListOpen}>
-            <CategoryMenuButton variant="text">
-              <Category fontSize="small" />
+            <CategoryMenuButton variant='text'>
+              <Category fontSize='small' />
               <Paragraph
-                fontWeight="600"
-                textAlign="left"
-                flex="1 1 0"
+                fontWeight='600'
+                textAlign='left'
+                flex='1 1 0'
                 ml={1.25}
-                color="grey.600"
+                color='grey.600'
               >
                 Categories
               </Paragraph>
 
               {settings.direction === "ltr" ? (
-                <ChevronRight className="dropdown-icon" fontSize="small" />
+                <ChevronRight className='dropdown-icon' fontSize='small' />
               ) : (
-                <ChevronLeft className="dropdown-icon" fontSize="small" />
+                <ChevronLeft className='dropdown-icon' fontSize='small' />
               )}
             </CategoryMenuButton>
           </CategoryMenu>

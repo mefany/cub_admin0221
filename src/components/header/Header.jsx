@@ -10,7 +10,6 @@ import clsx from "clsx";
 import Image from "components/BazaarImage";
 import { FlexBox } from "components/flex-box";
 import MiniCart from "components/mini-cart/MiniCart";
-import MobileMenu from "components/navbar/MobileMenu";
 import CategoryMenu from "components/categories/CategoryMenu";
 import GrocerySearchBox from "components/search-box/GrocerySearchBox";
 import Category from "components/icons/Category";
@@ -57,8 +56,8 @@ const Header = ({ isFixed, className, searchBoxType = "type1" }) => {
       >
         <FlexBox
           mr={2}
-          minWidth="170px"
-          alignItems="center"
+          minWidth='170px'
+          alignItems='center'
           sx={{
             display: {
               xs: "none",
@@ -66,32 +65,32 @@ const Header = ({ isFixed, className, searchBoxType = "type1" }) => {
             },
           }}
         >
-          <Link href="/">
+          <Link href='/'>
             <a>
-              <Image height={44} src="/assets/images/logo2.svg" alt="logo" />
+              <Image height={44} src='/assets/images/logo2.svg' alt='logo' />
             </a>
           </Link>
 
           {isFixed && (
             <CategoryMenu>
-              <FlexBox color="grey.600" alignItems="center" ml={2}>
-                <Button color="inherit">
-                  <Category fontSize="small" color="inherit" />
-                  <KeyboardArrowDown fontSize="small" color="inherit" />
+              <FlexBox color='grey.600' alignItems='center' ml={2}>
+                <Button color='inherit'>
+                  <Category fontSize='small' color='inherit' />
+                  <KeyboardArrowDown fontSize='small' color='inherit' />
                 </Button>
               </FlexBox>
             </CategoryMenu>
           )}
         </FlexBox>
 
-        <FlexBox justifyContent="center" flex="1 1 0">
+        <FlexBox justifyContent='center' flex='1 1 0'>
           {/* {searchBoxType === "type1" && <SearchBox />}
           {searchBoxType === "type2" && <GrocerySearchBox />} */}
           <GrocerySearchBox />
         </FlexBox>
 
         <FlexBox
-          alignItems="center"
+          alignItems='center'
           sx={{
             display: {
               xs: "none",
@@ -102,7 +101,7 @@ const Header = ({ isFixed, className, searchBoxType = "type1" }) => {
           <Box
             component={IconButton}
             p={1.25}
-            bgcolor="grey.200"
+            bgcolor='grey.200'
             onClick={toggleDialog}
           >
             <PersonOutline />
@@ -111,15 +110,13 @@ const Header = ({ isFixed, className, searchBoxType = "type1" }) => {
           <Box
             ml={2.5}
             p={1.25}
-            bgcolor="grey.200"
+            bgcolor='grey.200'
             component={IconButton}
-          // onClick={toggleSidenav}
+            // onClick={toggleSidenav}
           >
-
-            <Link href="/my/create">
-              <Add fontSize="small" />
+            <Link href='/my/create'>
+              <Add fontSize='small' />
             </Link>
-
           </Box>
 
           {/* <Badge badgeContent={state.cart.length} color="primary">
@@ -136,7 +133,7 @@ const Header = ({ isFixed, className, searchBoxType = "type1" }) => {
         </FlexBox>
 
         <Dialog
-          scroll="body"
+          scroll='body'
           open={dialogOpen}
           fullWidth={isMobile}
           onClose={toggleDialog}
@@ -144,11 +141,9 @@ const Header = ({ isFixed, className, searchBoxType = "type1" }) => {
           <Login />
         </Dialog>
 
-        <Drawer open={sidenavOpen} anchor="right" onClose={toggleSidenav}>
-          <MiniCart toggleSidenav={() => { }} />
+        <Drawer open={sidenavOpen} anchor='right' onClose={toggleSidenav}>
+          <MiniCart toggleSidenav={() => {}} />
         </Drawer>
-
-        {downMd && <MobileMenu />}
       </Container>
     </HeaderWrapper>
   );

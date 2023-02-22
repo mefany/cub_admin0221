@@ -2,13 +2,11 @@ import { Fragment } from "react";
 import Head from "next/head";
 import Router from "next/router";
 import nProgress from "nprogress";
-import RTL from "components/RTL";
 import MuiTheme from "theme/MuiTheme";
 import OpenGraphTags from "utils/OpenGraphTags";
 import { AppProvider } from "contexts/AppContext";
 import SettingsProvider from "contexts/SettingContext";
 import SnackbarProvider from "components/SnackbarProvider";
-import Script from "next/script";
 import { useEffect } from "react";
 
 import "nprogress/nprogress.css";
@@ -47,7 +45,7 @@ const App = ({ Component, pageProps }) => {
         <AppProvider>
           <MuiTheme>
             <SnackbarProvider>
-              <RTL>{getLayout(<AnyComponent {...pageProps} />)}</RTL>
+              {getLayout(<AnyComponent {...pageProps} />)}
             </SnackbarProvider>
           </MuiTheme>
         </AppProvider>

@@ -25,16 +25,15 @@ const StyledLink = styled("a")(({ theme }) => ({
 const Footer = () => {
   return (
     <footer>
-      <Box bgcolor="#222935">
+      <Box bgcolor='#222935' position='absolute' width='100%' height='200px'>
         <Container
           sx={{
             p: "1rem",
             color: "white",
           }}
         >
-
-<Grid item lg={12} md={12} sm={12} xs={12} textAlign="center">
-                {/* <Box
+          <Grid item lg={12} md={12} sm={12} xs={12} textAlign='center'>
+            {/* <Box
                   fontSize="18px"
                   fontWeight="600"
                   mb={1.5}
@@ -43,17 +42,17 @@ const Footer = () => {
                 >
                   Contact Us
                 </Box> */}
-                <Box py={0.6} color="grey.500">
-                  서울시 강동구 풍성로 1234 컵컵 오피스 
-                </Box>
-                <Box py={0.6} color="grey.500">
-                  Email: uilib.help@gmail.com | 010-0000-0000
-                </Box>
-                <Box py={0.6} mb={2} color="grey.500">
-                  사업자 등록번호: 1234-1234-1234
-                </Box>
+            <Box py={0.6} color='grey.500'>
+              서울시 강동구 풍성로 1234 컵컵 오피스
+            </Box>
+            <Box py={0.6} color='grey.500'>
+              Email: uilib.help@gmail.com | 010-0000-0000
+            </Box>
+            <Box py={0.6} mb={2} color='grey.500'>
+              사업자 등록번호: 1234-1234-1234
+            </Box>
 
-                {/* <FlexBox className="flex" mx={-0.625}>
+            {/* <FlexBox className="flex" mx={-0.625}>
                   {iconList.map((item, ind) => (
                     <a
                       href={item.url}
@@ -74,9 +73,7 @@ const Footer = () => {
                     </a>
                   ))}
                 </FlexBox> */}
-              </Grid>
-
-      
+          </Grid>
         </Container>
       </Box>
     </footer>

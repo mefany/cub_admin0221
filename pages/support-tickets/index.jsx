@@ -34,13 +34,13 @@ const TicketList = ({ ticketList }) => {
     <CustomerDashboardLayout>
       {/* TITLE HEADER AREA */}
       <UserDashboardHeader
-        title="Support Ticket"
+        title='Support Ticket'
         icon={CustomerService}
         navigation={<CustomerDashboardNavigation />}
       />
 
       {/* SUPPORT TICKET LIST AREA */}
-      {ticketList.map((item) => (
+      {ticketList.map(item => (
         <Link href={`/support-tickets/${item.slug}`} key={item.id} passHref>
           <TableRow
             sx={{
@@ -50,34 +50,27 @@ const TicketList = ({ ticketList }) => {
           >
             <Box>
               <span>{item.title}</span>
-              <FlexBox alignItems="center" flexWrap="wrap" pt={1} m={-0.75}>
-                <StyledChip label={item.type} size="small" />
-                <StyledChip label={item.status} size="small" green={1} />
+              <FlexBox alignItems='center' flexWrap='wrap' pt={1} m={-0.75}>
+                <StyledChip label={item.type} size='small' />
+                <StyledChip label={item.status} size='small' green={1} />
 
-                <Span className="pre" m={0.75} color="grey.600">
+                <Span className='pre' m={0.75} color='grey.600'>
                   {format(new Date(item.date), "MMM dd, yyyy")}
                 </Span>
 
-                <Span m={0.75} color="grey.600">
+                <Span m={0.75} color='grey.600'>
                   {item.category}
                 </Span>
               </FlexBox>
             </Box>
 
             <Typography
-              flex="0 0 0 !important"
-              textAlign="center"
-              color="grey.600"
+              flex='0 0 0 !important'
+              textAlign='center'
+              color='grey.600'
             >
               <IconButton>
-                <East
-                  fontSize="small"
-                  color="inherit"
-                  sx={{
-                    transform: ({ direction }) =>
-                      `rotate(${direction === "rtl" ? "180deg" : "0deg"})`,
-                  }}
-                />
+                <East fontSize='small' color='inherit' />
               </IconButton>
             </Typography>
           </TableRow>
@@ -85,12 +78,12 @@ const TicketList = ({ ticketList }) => {
       ))}
 
       {/* PAGINATION AREA */}
-      <FlexBox justifyContent="center" mt={5}>
+      <FlexBox justifyContent='center' mt={5}>
         <Pagination
           count={5}
-          color="primary"
-          variant="outlined"
-          onChange={(data) => console.log(data)}
+          color='primary'
+          variant='outlined'
+          onChange={data => console.log(data)}
         />
       </FlexBox>
     </CustomerDashboardLayout>

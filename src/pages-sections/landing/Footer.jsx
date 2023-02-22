@@ -14,30 +14,30 @@ const Footer = () => {
         py: "4rem",
       }}
     >
-      <FlexBox justifyContent="space-between" flexWrap="wrap">
-        <FlexBox className="flex" alignItems="center">
+      <FlexBox justifyContent='space-between' flexWrap='wrap'>
+        <FlexBox className='flex' alignItems='center'>
           Developed with{" "}
           <Favorite
-            fontSize="small"
-            color="primary"
+            fontSize='small'
+            color='primary'
             sx={{
               mx: "0.5rem",
               fontSize: "16px",
             }}
           />{" "}
-          & Care by &nbsp; <a href="https://ui-lib.com">UI Lib</a>
+          & Care by &nbsp; <a href='https://ui-lib.com'>UI Lib</a>
         </FlexBox>
 
-        <FlexBox className="flex">
+        <FlexBox className='flex'>
           {iconList.map((item, ind) => (
             <a
               href={item.url}
-              target="_blank"
-              rel="noreferrer noopenner"
+              target='_blank'
+              rel='noreferrer noopenner'
               key={ind}
             >
               <item.icon
-                color="inherit"
+                color='inherit'
                 sx={{
                   fontSize: "1.25rem",
                   mx: "0.5rem",
