@@ -71,13 +71,13 @@ const GrocerySearchBox = () => {
               disableElevation
               variant='contained'
               sx={{
-                px: "3rem",
+                width: "140px",
                 height: "100%",
                 borderRadius: "0 300px 300px 0",
               }}
               onClick={handleDocumentClick}
             >
-              Search
+              검색
             </Button>
           ),
           startAdornment: <SearchOutlinedIcon fontSize='small' />,
