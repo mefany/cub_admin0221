@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import { Box, Container, styled, Tab, Tabs } from "@mui/material";
 import { H2 } from "components/Typography";
 import ShopLayout1 from "components/layouts/ShopLayout1";
@@ -24,22 +25,19 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
 
 // ===============================================================
 const ProductDetails = (props) => {
-  //   const { frequentlyBought, relatedProducts, product } = props;
+  const router = useRouter();
   const [selectedOption, setSelectedOption] = useState(0);
-
   const handleOptionClick = (_, value) => setSelectedOption(value); // Show a loading state when the fallback is rendered
-
-  let linkArr;
-  if (process.browser) {
-    const link = document.location.pathname;
-    linkArr = link.split("/").slice(-1);
-  }
-
   const [book, setBook] = useState(null);
   const [relatedBook, setRelatedBook] = useState(null);
-
   const [isLoading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (!router.isReady) return;
+    setLoading(true);
+    getBookById(router.query.id)
+    getBookingUser(router.query.id)
+  }, [router]);
 
   const getIsbnBooks = async (isbn) => {
     console.log('get', isbn)
@@ -52,22 +50,31 @@ const ProductDetails = (props) => {
     setLoading(false);
   };
 
-  const getBookById = async (linkArr) => {
+  const getBookById = async (trade_uid) => {
     const res = await axios.get(
-      `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/trade/${linkArr}`
+      `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/trade/${trade_uid}`
     );
     const book = await res.data[0];
     setBook(book);
     getIsbnBooks(book.isbn)
   };
 
+  const getBookingUser = async (trade_uid) => {
+    const res = await axios.get(
+      `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/booking/${trade_uid}`
+    );
+    console.log(res)
+  };
 
-  useEffect(() => {
-    setLoading(true);
-    getBookById(linkArr);
-  }, []);
-
-
+  const postBookingUser = async (trade_uid, user_uid) => {
+    const res = await axios.get(
+      `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/booking/`, {
+      trade_uid: trade_uid,
+      user_uid: user_uid
+    }
+    );
+    console.log(res)
+  };
 
   return (
     <ShopLayout1>

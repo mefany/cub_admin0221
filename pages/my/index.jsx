@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import { Pagination } from "@mui/material";
 import {
   Box,
@@ -31,18 +32,17 @@ const StyledChip = styled(Chip)(({ theme, green }) => ({
 }));
 
 const Orders = () => {
-  let linkArr;
-  if (process.browser) {
-    const link = document.location.pathname;
-    linkArr = link.split("/").slice(-1);
-    console.log(linkArr);
-  }
-
+  const router = useRouter();
   const [data, setData] = useState(null);
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (!router.isReady) return;
     setLoading(true);
+    getUserInfo(router.query.id)
+  }, [router]);
+
+  const getUserInfo = (user_uid) => {
     fetch(
       `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/trade?user_uid=15`
     )
@@ -52,7 +52,7 @@ const Orders = () => {
         console.log(data);
         setLoading(false);
       });
-  }, []);
+  }
 
   const NEWBOOK_BUTTON = (
     <Link href='/my/create'>
@@ -80,42 +80,45 @@ const Orders = () => {
 
       {data ? (
         data.map(item => (
-          <TableRow
-            key={item.trade_uid}
-            sx={{
-              my: "1rem",
-              p: "15px 24px",
-            }}
-          >
-            <Box>
-              <span>{item.title}</span>
-              <Span m={0.75} color='grey.600'>
-                | {item.sell_price}원
-              </Span>
-              <FlexBox alignItems='center' flexWrap='wrap' pt={1} m={-0.75}>
-                {/* <StyledChip label={item.shop_name} size='small' /> */}
-                <StyledChip label={item.sell_state} size='small' green={1} />
+          <Link href={`/my/${item.trade_uid}`} passHref>
+            <TableRow
+              key={item.trade_uid}
+              sx={{
+                my: "1rem",
+                p: "15px 24px",
+              }}
+            >
+              <Box>
+                <span>{item.title}</span>
+                <Span m={0.75} color='grey.600'>
+                  | {item.sell_price}원
+                </Span>
+                <FlexBox alignItems='center' flexWrap='wrap' pt={1} m={-0.75}>
+                  {/* <StyledChip label={item.shop_name} size='small' /> */}
+                  <StyledChip label={item.sell_state} size='small' green={1} />
 
-                {/* <Span className='pre' m={0.75} color='grey.600'>
+                  {/* <Span className='pre' m={0.75} color='grey.600'>
                   {format(new Date(item.date), "MMM dd, yyyy")}
                 </Span> */}
 
-                <Span m={0.75} color='grey.600'>
-                  <Place fontSize='small' color='inherit' /> {item.shop_name}
-                </Span>
-              </FlexBox>
-            </Box>
+                  <Span m={0.75} color='grey.600'>
+                    <Place fontSize='small' color='inherit' /> {item.shop_name}
+                  </Span>
+                </FlexBox>
+              </Box>
 
-            <Typography
-              flex='0 0 0 !important'
-              textAlign='center'
-              color='grey.600'
-            >
-              <IconButton>
-                <East fontSize='small' color='inherit' />
-              </IconButton>
-            </Typography>
-          </TableRow>
+              <Typography
+                flex='0 0 0 !important'
+                textAlign='center'
+                color='grey.600'
+              >
+                <IconButton>
+                  <East fontSize='small' color='inherit' />
+                </IconButton>
+              </Typography>
+            </TableRow>
+          </Link>
+
         ))
       ) : (
         <H5>Loading...</H5>

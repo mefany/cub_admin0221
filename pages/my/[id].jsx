@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { CameraEnhance, Person } from "@mui/icons-material";
@@ -19,45 +20,19 @@ import QRCode from "react-qr-code";
 
 // ===========================================================
 const ProfileEditor = () => {
-  let linkArr;
-  if (process.browser) {
-    const link = document.location.pathname;
-    linkArr = link.split("/").slice(-1);
-  }
-
+  const router = useRouter();
   const [data, setData] = useState(null);
   const [confirmCode, setConfirmCode] = useState("");
   const [sellStatus, setSellStatus] = useState("");
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (!router.isReady) return;
     setLoading(true);
-    fetch(
-      `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/trade/${linkArr}`
-    )
-      .then(res => res.json())
-      .then(data => {
-        setData(data[0]);
-        setSellStatus(data[0].sell_state);
-        if (data[0].confirm_code) {
-          setConfirmCode(data[0].confirm_code);
-        }
-        console.log(data);
-        setLoading(false);
-      });
-  }, []);
+    getConfirmCode(router.query.id)
+  }, [router]);
 
-  useEffect(() => {}, [confirmCode, sellStatus]);
-
-  const checkoutSchema = yup.object().shape({
-    title: yup.string().required("책 제목을 입력하세요."),
-    sell_price: yup.string().required("가격을 입력하세요."),
-  });
-
-  const handleFormSubmit = async values => {
-    console.log(values);
-    postNewBook(values);
-  }; // SECTION TITLE HEADER LINK
+  useEffect(() => { }, [confirmCode, sellStatus]);
 
   const postNewBook = async values => {
     await axios
@@ -88,6 +63,22 @@ const ProfileEditor = () => {
       });
   };
 
+  const getConfirmCode = (trade_uid) => {
+    fetch(
+      `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/trade/${trade_uid}`
+    )
+      .then(res => res.json())
+      .then(data => {
+        setData(data[0]);
+        setSellStatus(data[0].sell_state);
+        if (data[0].confirm_code) {
+          setConfirmCode(data[0].confirm_code);
+        }
+        console.log(data);
+        setLoading(false);
+      });
+  }
+
   const createConfirm = async () => {
     await axios
       .put(
@@ -108,6 +99,18 @@ const ProfileEditor = () => {
         console.log(error);
       });
   };
+
+  const checkoutSchema = yup.object().shape({
+    title: yup.string().required("책 제목을 입력하세요."),
+    sell_price: yup.string().required("가격을 입력하세요."),
+  });
+
+  const handleFormSubmit = async values => {
+    console.log(values);
+    postNewBook(values);
+  }; // SECTION TITLE HEADER LINK
+
+
 
   const HEADER_LINK = (
     <Link href='/my'>
@@ -220,7 +223,7 @@ const ProfileEditor = () => {
                       )}
 
                       {values.sell_state !== "판매완료" &&
-                      confirmCode !== "" ? (
+                        confirmCode !== "" ? (
                         <>
                           <div>구매자에게 아래 예약번호를 공유해주세요.</div>
                           <div>{confirmCode}</div>

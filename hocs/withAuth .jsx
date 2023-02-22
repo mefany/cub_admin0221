@@ -1,22 +1,28 @@
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 export const withAuth = Component => props => {
-  if (typeof window !== "undefined") {
-    const Router = useRouter();
+  const Router = useRouter();
+  const [domLoaded, setDomLoaded] = useState(false);
+  const [accessToken, setAccessToken] = useState(false);
 
-    const accessToken = localStorage.getItem("token");
+  useEffect(() => {
+    setDomLoaded(true);
+    setAccessToken(localStorage.getItem("token"))
+  }, []);
 
-    // If there is no access token we redirect to "/" page.
-    if (!accessToken) {
-      alert("로그인 후 이용이 가능합니다.");
-      Router.replace("/login");
-      return null;
-    }
-
-    // If this is an accessToken we just render the component that was passed with all its props
-    return <Component {...props} />;
+  if (domLoaded && !accessToken) {
+    alert("로그인 후 이용이 가능합니다.");
+    Router.replace("/login");
+    return null;
   }
 
-  // If we are on server, return null
-  return null;
+  return (
+    <>
+      {accessToken && (
+        <Component {...props} />
+      )}
+    </>
+  );
+
 };
