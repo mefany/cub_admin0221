@@ -11,6 +11,7 @@ import UserDashboardHeader from "components/header/UserDashboardHeader";
 import CustomerDashboardLayout from "components/layouts/customer-dashboard";
 import CustomerDashboardNavigation from "components/layouts/customer-dashboard/Navigations";
 import { withAuth } from "../../hocs/withAuth ";
+
 // ====================================================
 const Orders = () => {
   let linkArr;
@@ -28,19 +29,18 @@ const Orders = () => {
     fetch(
       `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/trade?user_uid=15`
     )
-      .then((res) => res.json())
-      .then((data) => {
+      .then(res => res.json())
+      .then(data => {
         setData(data);
         console.log(data);
         setLoading(false);
       });
   }, []);
 
-
   const NEWBOOK_BUTTON = (
-    <Link href="/my/create">
+    <Link href='/my/create'>
       <Button
-        color="primary"
+        color='primary'
         sx={{
           px: 4,
           bgcolor: "primary.light",
@@ -51,12 +51,11 @@ const Orders = () => {
     </Link>
   );
 
-
   return (
     <CustomerDashboardLayout>
       {/* TITLE HEADER AREA */}
       <UserDashboardHeader
-        title="판매중인 책"
+        title='판매중인 책'
         icon={ShoppingBag}
         button={NEWBOOK_BUTTON}
         navigation={<CustomerDashboardNavigation />}
@@ -74,31 +73,31 @@ const Orders = () => {
           },
         }}
       >
-        <H5 color="grey.600" my={0} mx={0.75} textAlign="left">
+        <H5 color='grey.600' my={0} mx={0.75} textAlign='left'>
           등록번호 #
         </H5>
 
-        <H5 color="grey.600" my={0} mx={0.5} textAlign="center">
+        <H5 color='grey.600' my={0} mx={0.5} textAlign='center'>
           제목
         </H5>
 
-        <H5 color="grey.600" my={0} mx={0.75} textAlign="center">
+        <H5 color='grey.600' my={0} mx={0.75} textAlign='center'>
           가격
         </H5>
 
-        <H5 color="grey.600" my={0} mx={0.75} textAlign="left">
+        <H5 color='grey.600' my={0} mx={0.75} textAlign='left'>
           매장
         </H5>
 
-        <H5 color="grey.600" my={0} mx={0.75} textAlign="center">
+        <H5 color='grey.600' my={0} mx={0.75} textAlign='center'>
           상태
         </H5>
 
         <H5
           my={0}
           px={2.75}
-          color="grey.600"
-          flex="0 0 0 !important"
+          color='grey.600'
+          flex='0 0 0 !important'
           display={{
             xs: "none",
             md: "block",
@@ -106,18 +105,18 @@ const Orders = () => {
         />
       </TableRow>
 
-      {data ?
-        data.map((order) => (
-          <SellBookRow order={order} key={order.trade_uid} />)
-        ) : <H5>Loading...</H5>}
+      {data ? (
+        data.map(order => <SellBookRow order={order} key={order.trade_uid} />)
+      ) : (
+        <H5>Loading...</H5>
+      )}
 
-
-      <FlexBox justifyContent="center" mt={5}>
+      <FlexBox justifyContent='center' mt={5}>
         <Pagination
           count={5}
-          color="primary"
-          variant="outlined"
-          onChange={(data) => console.log(data)}
+          color='primary'
+          variant='outlined'
+          onChange={data => console.log(data)}
         />
       </FlexBox>
     </CustomerDashboardLayout>

@@ -1,54 +1,58 @@
 import Link from "next/link";
-import { useEffect, useRef, useState, useTransition } from "react";
+// import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState } from "react";
+
 import { Box, Button, TextField } from "@mui/material";
 import { SearchOutlinedIcon } from "./styled";
 import { useRouter } from "next/router";
 
-
 const GrocerySearchBox = () => {
   const router = useRouter();
   const parentRef = useRef();
-  const [_, startTransition] = useTransition();
+  // const [_, startTransition] = useTransition();
   const [resultList, setResultList] = useState([]);
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
 
-  const handleSearch = (e) => {
-    startTransition(() => {
-      const value = e.target?.value;
-      if (!value) setSearchText('');
-      else setSearchText(e.target.value)
-    });
+  const handleSearch = e => {
+    // startTransition(() => {
+    const value = e.target?.value;
+    if (!value) setSearchText("");
+    else setSearchText(e.target.value);
+    // });
   };
 
   const handleDocumentClick = () => {
-    const title = searchText
-    if (searchText !== '') {
+    const title = searchText;
+    if (searchText !== "") {
       router.push({
         pathname: "/product/search",
         query: {
           title: title,
-        }
-      })
+        },
+      });
     } else {
-      alert('검색어를 입력하세요')
+      alert("검색어를 입력하세요");
     }
-
-  }
+  };
 
   return (
     <Box
-      position="relative"
-      flex="1 1 0"
-      maxWidth="670px"
-      mx="auto"
+      position='relative'
+      flex='1 1 0'
+      maxWidth='670px'
+      mx='auto'
       {...{
         ref: parentRef,
       }}
     >
       <TextField
         fullWidth
-        variant="outlined"
-        placeholder={router.pathname.includes('/shops/') ? "매장내 도서를 검색해보세요" : "도서를 검색해보세요."}
+        variant='outlined'
+        placeholder={
+          router.pathname.includes("/shops/")
+            ? "매장내 도서를 검색해보세요"
+            : "도서를 검색해보세요."
+        }
         onChange={handleSearch}
         InputProps={{
           sx: {
@@ -63,9 +67,9 @@ const GrocerySearchBox = () => {
           },
           endAdornment: (
             <Button
-              color="primary"
+              color='primary'
               disableElevation
-              variant="contained"
+              variant='contained'
               sx={{
                 px: "3rem",
                 height: "100%",
@@ -76,14 +80,12 @@ const GrocerySearchBox = () => {
               Search
             </Button>
           ),
-          startAdornment: <SearchOutlinedIcon fontSize="small" />,
+          startAdornment: <SearchOutlinedIcon fontSize='small' />,
         }}
       />
 
       {resultList.length > 0 && (
-        <Link href={`/product/search/`} passHref>
-        </Link>
-
+        <Link href={`/product/search/`} passHref></Link>
       )}
     </Box>
   );

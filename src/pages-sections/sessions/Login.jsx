@@ -69,8 +69,9 @@ const Login = () => {
   }
 
   function kakaoLogin() {
+    console.log("kakaoLogin");
     Kakao.Auth.authorize({
-      redirectUri: "http://localhost:3001/kakao",
+      redirectUri: "http://localhost:3000/kakao",
     });
   }
 
@@ -88,10 +89,10 @@ const Login = () => {
         console.log(response);
         const { data } = response;
         if (response.status === 200) {
-          document.cookie = `token=${data[0].token}`;
-          document.cookie = `user_uid=${data[0].user_uid}`;
-          // sessionStorage.setItem("token",  );
-          // sessionStorage.setItem("user_uid", data[0].user_uid);
+          // document.cookie = `token=${data[0].token}`;
+          // document.cookie = `user_uid=${data[0].user_uid}`;
+          localStorage.setItem("token", data[0].token);
+          localStorage.setItem("user_uid", data[0].user_uid);
           router.push("/");
         }
       })
