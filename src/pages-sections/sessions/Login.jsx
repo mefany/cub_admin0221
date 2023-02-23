@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { Button, Card, Box, styled } from "@mui/material";
 import Link from "next/link";
 import * as yup from "yup";
@@ -47,10 +47,25 @@ export const Wrapper = styled(({ children, passwordVisibility, ...rest }) => (
 
 const Login = () => {
   const router = useRouter();
+  const [isLoading, setLoading] = useState(false);
   const [passwordVisibility, setPasswordVisibility] = useState(false);
   const togglePasswordVisibility = useCallback(() => {
     setPasswordVisibility(visible => !visible);
   }, []);
+
+  useEffect(() => {
+    if (sessionStorage.getItem("token") !== null) {
+      redirect();
+    } else {
+      setLoading(true);
+    }
+  }, []);
+
+  const redirect = () => {
+    sessionStorage.getItem("prevPath") === "null" || null
+      ? router.push("/")
+      : router.push(sessionStorage.getItem("prevPath"));
+  };
 
   const handleFormSubmit = async values => {
     console.log(values);
@@ -89,11 +104,9 @@ const Login = () => {
         console.log(response);
         const { data } = response;
         if (response.status === 200) {
-          // document.cookie = `token=${data[0].token}`;
-          // document.cookie = `user_uid=${data[0].user_uid}`;
-          localStorage.setItem("token", data[0].token);
-          localStorage.setItem("user_uid", data[0].user_uid);
-          router.push("/");
+          sessionStorage.setItem("token", data[0].token);
+          sessionStorage.setItem("user_uid", data[0].user_uid);
+          redirect();
         }
       })
       .catch(error => {
@@ -110,6 +123,9 @@ const Login = () => {
       onSubmit: handleFormSubmit,
       validationSchema: formSchema,
     });
+
+  if (!isLoading) return null;
+
   return (
     <Wrapper elevation={3} passwordVisibility={passwordVisibility}>
       <form onSubmit={handleSubmit}>

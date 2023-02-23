@@ -8,7 +8,7 @@ export const withAuth = Component => props => {
 
   useEffect(() => {
     setDomLoaded(true);
-    setAccessToken(localStorage.getItem("token"))
+    setAccessToken(sessionStorage.getItem("token"));
   }, []);
 
   if (domLoaded && !accessToken) {
@@ -17,12 +17,5 @@ export const withAuth = Component => props => {
     return null;
   }
 
-  return (
-    <>
-      {accessToken && (
-        <Component {...props} />
-      )}
-    </>
-  );
-
+  return <>{accessToken && <Component {...props} />}</>;
 };
