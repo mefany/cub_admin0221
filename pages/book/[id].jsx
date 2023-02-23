@@ -24,56 +24,61 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
 })); // ===============================================================
 
 // ===============================================================
-const ProductDetails = (props) => {
+const ProductDetails = props => {
   const router = useRouter();
   const [selectedOption, setSelectedOption] = useState(0);
   const handleOptionClick = (_, value) => setSelectedOption(value); // Show a loading state when the fallback is rendered
   const [book, setBook] = useState(null);
   const [relatedBook, setRelatedBook] = useState(null);
   const [isLoading, setLoading] = useState(false);
+  const [bookingUser, setBookingUser] = useState(null);
 
   useEffect(() => {
     if (!router.isReady) return;
     setLoading(true);
-    getBookById(router.query.id)
-    getBookingUser(router.query.id)
+    getBookById(router.query.id);
+    getBookingUser(router.query.id);
   }, [router]);
 
-  const getIsbnBooks = async (isbn) => {
-    console.log('get', isbn)
+  const getIsbnBooks = async isbn => {
+    console.log("get", isbn);
     const res = await axios.get(
       `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/trade?isbn=${isbn}`
     );
     const books = await res.data;
-    console.log(books)
+    console.log(books);
     setRelatedBook(books);
     setLoading(false);
   };
 
-  const getBookById = async (trade_uid) => {
+  const getBookById = async trade_uid => {
     const res = await axios.get(
       `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/trade/${trade_uid}`
     );
     const book = await res.data[0];
     setBook(book);
-    getIsbnBooks(book.isbn)
+    getIsbnBooks(book.isbn);
   };
 
-  const getBookingUser = async (trade_uid) => {
+  const getBookingUser = async trade_uid => {
     const res = await axios.get(
       `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/booking/${trade_uid}`
     );
-    console.log(res)
+    const users = await res.data;
+    if (users.length > 0) {
+      setBookingUser(users);
+    }
   };
 
   const postBookingUser = async (trade_uid, user_uid) => {
     const res = await axios.get(
-      `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/booking/`, {
-      trade_uid: trade_uid,
-      user_uid: user_uid
-    }
+      `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/booking/`,
+      {
+        trade_uid: trade_uid,
+        user_uid: user_uid,
+      }
     );
-    console.log(res)
+    console.log(res);
   };
 
   return (
@@ -84,21 +89,29 @@ const ProductDetails = (props) => {
         }}
       >
         {/* PRODUCT DETAILS INFO AREA */}
-        {book ? <BookIntro data={book} /> : <H2>Loading...</H2>}
+        {book ? (
+          <BookIntro data={book} bookingUser={bookingUser} />
+        ) : (
+          <H2>Loading...</H2>
+        )}
 
         {/* PRODUCT DESCRIPTION AND REVIEW */}
         <StyledTabs
-          textColor="primary"
+          textColor='primary'
           value={selectedOption}
-          indicatorColor="primary"
+          indicatorColor='primary'
           onChange={handleOptionClick}
         >
-          <Tab className="inner-tab" label="상세" />
-          <Tab className="inner-tab" label="리뷰 (3)" />
+          <Tab className='inner-tab' label='상세' />
+          <Tab className='inner-tab' label='리뷰 (3)' />
         </StyledTabs>
 
         <Box mb={6}>
-          {selectedOption === 0 && book ? <ProductDescription data={book} /> : <H2>Loading...</H2>}
+          {selectedOption === 0 && book ? (
+            <ProductDescription data={book} />
+          ) : (
+            <H2>Loading...</H2>
+          )}
           {selectedOption === 1 && <ProductReview />}
         </Box>
 

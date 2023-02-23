@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Add, Remove } from "@mui/icons-material";
 import { Avatar, Box, Button, Grid, MenuItem, TextField } from "@mui/material";
 import LazyImage from "components/LazyImage";
@@ -12,16 +12,51 @@ import { FlexBox, FlexRowCenter } from "../flex-box";
 //================================================================
 
 // ================================================================
-const BookIntro = ({ data }) => {
-  const { trade_uid, sell_price, title, sell_state, image, shop_name, user_uid, nickname } = data;
+const BookIntro = ({ data, bookingUser }) => {
+  const {
+    trade_uid,
+    sell_price,
+    title,
+    sell_state,
+    image,
+    shop_name,
+    user_uid,
+    nickname,
+  } = data;
   const { state, dispatch } = useAppContext();
   const [selectedImage, setSelectedImage] = useState(0); // CHECK PRODUCT EXIST OR NOT IN THE CART
 
-  const cartItem = state.cart.find((item) => item.trade_uid === trade_uid); // HANDLE SELECT IMAGE
+  const [isSeller, setIsSeller] = useState(false);
+  const [isBuyer, setIsBuyer] = useState(false);
+  const [isGuest, setIsGuest] = useState(false);
+  const [isBooking, setIsBooking] = useState(false);
 
-  const handleImageClick = (ind) => () => setSelectedImage(ind); // HANDLE CHANGE CART
+  useEffect(() => {
+    if (sessionStorage.getItem("token") === null) {
+      setIsGuest(true);
+    } else {
+      if (user_uid === sessionStorage.getItem("user_uid")) {
+        setIsSeller(true);
+      } else {
+        setIsBuyer(true);
+      }
+    }
 
-  const handleCartAmountChange = (amount) => () => {
+    if (bookingUser !== null && isBuyer) {
+      bookingUser.forEach(user => {
+        if (user.user_uid === sessionStorage.getItem("user_uid")) {
+          setIsBooking(true);
+        }
+      });
+    }
+    console.log("isBooking", isBooking);
+  }, []);
+
+  const cartItem = state.cart.find(item => item.trade_uid === trade_uid); // HANDLE SELECT IMAGE
+
+  const handleImageClick = ind => () => setSelectedImage(ind); // HANDLE CHANGE CART
+
+  const handleCartAmountChange = amount => () => {
     dispatch({
       type: "CHANGE_CART_AMOUNT",
       payload: {
@@ -34,28 +69,23 @@ const BookIntro = ({ data }) => {
     });
   };
 
-  const handleOnChange = (e) => {
-    console.log(e.target.value)
-  }
+  const handleOnChange = e => {
+    console.log(e.target.value);
+  };
 
   return (
-    <Box width="100%">
-      <Grid container spacing={3} justifyContent="space-around">
-        <Grid item md={6} xs={12} alignItems="center">
-          <FlexBox justifyContent="center" mb={6}>
+    <Box width='100%'>
+      <Grid container spacing={3} justifyContent='space-around'>
+        <Grid item md={6} xs={12} alignItems='center'>
+          <FlexBox justifyContent='center' mb={6}>
             <LazyImage
               alt={title}
               width={300}
               height={300}
-              loading="eager"
-              objectFit="contain"
+              loading='eager'
+              objectFit='contain'
               src={image}
             />
-            {/* <Image
-              src="http://image.yes24.com/goods/115032356/XL"
-              width={300}
-              height={300}
-            /> */}
           </FlexBox>
 
           {/* <FlexBox overflow="auto">
@@ -90,105 +120,82 @@ const BookIntro = ({ data }) => {
           </FlexBox> */}
         </Grid>
 
-        <Grid item md={6} xs={12} alignItems="center">
+        <Grid item md={6} xs={12} alignItems='center'>
           <H1 mb={2}>{title}</H1>
 
-          <FlexBox alignItems="center" mb={2}>
+          <FlexBox alignItems='center' mb={2}>
             <Box>판매매장:</Box>
             <H6 ml={1}>{shop_name}</H6>
           </FlexBox>
 
-          <FlexBox alignItems="center" mb={2}>
-            <Box lineHeight="1">Rated:</Box>
-            <Box mx={1} lineHeight="1">
+          <FlexBox alignItems='center' mb={2}>
+            <Box lineHeight='1'>Rated:</Box>
+            <Box mx={1} lineHeight='1'>
               <BazaarRating
-                color="warn"
-                fontSize="1.25rem"
+                color='warn'
+                fontSize='1.25rem'
                 value={4}
                 readOnly
               />
             </Box>
-            <H6 lineHeight="1">(50)</H6>
+            <H6 lineHeight='1'>(50)</H6>
           </FlexBox>
 
           <Box mb={3}>
-            <H2 color="primary.main" mb={0.5} lineHeight="1">
+            <H2 color='primary.main' mb={0.5} lineHeight='1'>
               {sell_price}원
             </H2>
-            <Box color="inherit">{sell_state}</Box>
+            <Box color='inherit'>{sell_state}</Box>
           </Box>
 
-          <Grid container>
-            <Grid item>
-              <TextField
-                select
-                // fullWidth
-                size="small"
-                variant="outlined"
-                placeholder="Short by"
-                defaultValue={sortOptions[0].value}
-                onChange={handleOnChange}
+          {isSeller && bookingUser.length > 0 && (
+            <Grid container>
+              <Grid item>
+                <TextField
+                  select
+                  // fullWidth
+                  size='small'
+                  variant='outlined'
+                  defaultValue={bookingUser[0].nickname}
+                  onChange={handleOnChange}
+                >
+                  {bookingUser.map(user => (
+                    <MenuItem value={user.nickname} key={user.booking_uid}>
+                      {user.nickname}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
 
-              >
-                {sortOptions.map((item) => (
-                  <MenuItem value={item.value} key={item.value}>
-                    {item.label}
-                  </MenuItem>
-                ))}
-              </TextField>
+              <Grid item alignItems='stretch' style={{ display: "flex" }}>
+                <Button color='primary' variant='contained'>
+                  예약확정
+                </Button>
+              </Grid>
             </Grid>
+          )}
 
-            <Grid item alignItems="stretch" style={{ display: "flex" }}>
-              <Button color="primary" variant="contained">
-                예약확정
-              </Button>
-            </Grid>
-          </Grid>
-
-
-          {!cartItem?.qty ? (
+          {!isSeller && !isBooking ? (
             <Button
-              color="primary"
-              variant="contained"
+              color='primary'
+              variant='contained'
               onClick={handleCartAmountChange(1)}
             >
               구매예약
             </Button>
           ) : (
-            <FlexBox alignItems="center" mb={4.5}>
-              <Button
-                size="small"
-                sx={{
-                  p: 1,
-                }}
-                color="primary"
-                variant="outlined"
-                onClick={handleCartAmountChange(cartItem?.qty - 1)}
-              >
-                <Remove fontSize="small" />
-              </Button>
-
-              <H3 fontWeight="600" mx={2.5}>
-                {cartItem?.qty.toString().padStart(2, "0")}
-              </H3>
-
-              <Button
-                size="small"
-                sx={{
-                  p: 1,
-                }}
-                color="primary"
-                variant="outlined"
-                onClick={handleCartAmountChange(cartItem?.qty + 1)}
-              >
-                <Add fontSize="small" />
-              </Button>
-            </FlexBox>
+            <Button
+              color='primary'
+              variant='contained'
+              onClick={handleCartAmountChange(1)}
+            >
+              예약취소
+            </Button>
           )}
 
-          <FlexBox alignItems="center" mb={2}>
+          <FlexBox alignItems='center' mb={2}>
             <Box>판매자:</Box>
-            <Link href="/shops/fdfdsa">
+            <Link href='/shops/fdfdsa'>
               <a>
                 <H6 ml={1}>{nickname}</H6>
               </a>
