@@ -79,10 +79,9 @@ const Orders = () => {
       />
 
       {data ? (
-        data.map(item => (
-          <Link href={`/my/${item.trade_uid}`} passHref>
+        data.map((item, index) => (
+          <Link href={`/my/${item.trade_uid}`} key={index} passHref>
             <TableRow
-              key={item.trade_uid}
               sx={{
                 my: "1rem",
                 p: "15px 24px",
@@ -94,13 +93,7 @@ const Orders = () => {
                   | {item.sell_price}원
                 </Span>
                 <FlexBox alignItems='center' flexWrap='wrap' pt={1} m={-0.75}>
-                  {/* <StyledChip label={item.shop_name} size='small' /> */}
                   <StyledChip label={item.sell_state} size='small' green={1} />
-
-                  {/* <Span className='pre' m={0.75} color='grey.600'>
-                  {format(new Date(item.date), "MMM dd, yyyy")}
-                </Span> */}
-
                   <Span m={0.75} color='grey.600'>
                     <Place fontSize='small' color='inherit' /> {item.shop_name}
                   </Span>

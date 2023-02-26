@@ -1,283 +1,332 @@
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { CameraEnhance, Person } from "@mui/icons-material";
-import { Avatar, Box, Button, Grid, TextField, Stack } from "@mui/material";
-import { DatePicker } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { Avatar, Box, Button, Grid, TextField, Stack, Divider } from "@mui/material";
+import { H3, Paragraph } from "components/Typography";
 import Card1 from "components/Card1";
-import { FlexBox } from "components/flex-box";
 import UserDashboardHeader from "components/header/UserDashboardHeader";
 import CustomerDashboardLayout from "components/layouts/customer-dashboard";
 import CustomerDashboardNavigation from "components/layouts/customer-dashboard/Navigations";
 import DropZone from "components/DropZone";
+import { withAuth } from "../../hocs/withAuth ";
 import axios from "axios";
-import { H5 } from "components/Typography";
-import QRCode from "react-qr-code";
+import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
 
+const bookCard = {
+  book_uid: null,
+  trade_title: "",
+  sell_price: 0 || "",
+  trade_description: "",
+}
 // ===========================================================
 const ProfileEditor = () => {
-  const router = useRouter();
-  const [data, setData] = useState(null);
-  const [confirmCode, setConfirmCode] = useState("");
+  const router = useRouter()
+  const [tradeData, setTradeData] = useState(null);
+  const [bookInfo, setBookInfo] = useState({})
+  const [isbn, setIsbn] = useState('')
+  const [user_id, setUserId] = useState('')
   const [sellStatus, setSellStatus] = useState("");
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!router.isReady) return;
     setLoading(true);
-    getConfirmCode(router.query.id)
+    getTrade(router.query.id)
   }, [router]);
 
-  useEffect(() => { }, [confirmCode, sellStatus]);
+  useEffect(() => {
+    setUserId(sessionStorage.getItem("user_uid"))
+  }, []);
 
-  const postNewBook = async values => {
-    await axios
-      .put(
-        `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/trade`,
-        {
-          isbn: null,
-          title: values.title,
-          author: null,
-          image: null,
-          price: null,
-          description: null,
-          publisher: null,
-          pubdate: null,
-          seller_uid: 26,
-          sell_price: parseInt(values.sell_price),
-          shop_uid: null,
-          trade_description: values.trade_description,
-          trade_image: null,
-          trade_uid: data.trade_uid,
-        }
-      )
-      .then(response => {
-        console.log(response);
-      })
-      .catch(error => {
-        console.log(error);
-      });
+  const checkoutSchema = yup.object().shape({
+    trade_title: yup.string().required("책 제목을 입력하세요."),
+    sell_price: yup.string().required("가격을 입력하세요."),
+  });
+
+  const handleFormSubmit = (values) => {
+    const newObj = {
+      trade_title: values.trade_title,
+      seller_uid: parseInt(user_id),
+      sell_price: parseInt(values.sell_price),
+      trade_description: values.trade_description,
+    }
+    bookCard = { ...bookCard, ...newObj, ...bookInfo, action: 'update' }
+    postNewTrade()
   };
 
-  const getConfirmCode = (trade_uid) => {
+  const handleIsbnSubmit = () => {
+    if (isbn !== '') {
+      getBookByIsbn(isbn);
+    }
+  };
+
+  const handleOnChange = (e) => {
+    setIsbn(e.target.value)
+  }
+
+  const getTrade = (trade_uid) => {
     fetch(
       `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/trade/${trade_uid}`
     )
       .then(res => res.json())
       .then(data => {
-        setData(data[0]);
+        bookCard = { ...bookCard, ...data[0] }
+        setTradeData(data[0]);
+        setBookInfo(data[0])
         setSellStatus(data[0].sell_state);
-        if (data[0].confirm_code) {
-          setConfirmCode(data[0].confirm_code);
-        }
-        console.log(data);
+        console.log(data, bookCard);
         setLoading(false);
       });
   }
 
-  const createConfirm = async () => {
+
+  const getBookByIsbn = async (isbn) => {
     await axios
-      .put(
-        `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/trade`,
-        {
-          create_confirm: true,
-          trade_uid: data.trade_uid,
-        }
+      .get(
+        `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/isbn?isbn=${isbn}`
       )
-      .then(response => {
-        console.log(response);
-        if (response.status === 200) {
-          setConfirmCode(response.data);
-          setSellStatus("예약중");
+      .then((response) => {
+        console.log(response.data.items[0]);
+        if (response.data.items[0] !== undefined) {
+          console.log(response.data.items[0])
+          setBookInfo(response.data.items[0])
+          postNewBook({ ...response.data.items[0], isbn: isbn })
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
   };
 
-  const checkoutSchema = yup.object().shape({
-    title: yup.string().required("책 제목을 입력하세요."),
-    sell_price: yup.string().required("가격을 입력하세요."),
-  });
+  const postNewBook = async (obj) => {
+    await axios
+      .post(
+        `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/book`,
+        obj
+      )
+      .then((response) => {
+        if (response.status === 200) {
+          bookCard.book_uid = response.data
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
-  const handleFormSubmit = async values => {
-    console.log(values);
-    postNewBook(values);
-  }; // SECTION TITLE HEADER LINK
-
-
+  const postNewTrade = async () => {
+    await axios
+      .post(
+        `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/trade`,
+        bookCard
+      )
+      .then((response) => {
+        if (response.status === 200) {
+          alert('정상 등록되었습니다.')
+          router.push("/my");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const HEADER_LINK = (
-    <Link href='/my'>
+    <Link href="/my">
       <Button
-        color='primary'
+        color="primary"
         sx={{
           px: 4,
           bgcolor: "primary.light",
         }}
       >
-        돌아가기
+        목록으로
       </Button>
     </Link>
-  ); // Show a loading state when the fallback is rendered
+  );
 
   return (
     <CustomerDashboardLayout>
       {/* TITLE HEADER AREA */}
       <UserDashboardHeader
         icon={Person}
-        title='내 책 수정'
+        title="내 책 수정"
         button={HEADER_LINK}
         navigation={<CustomerDashboardNavigation />}
       />
 
       {/* PROFILE EDITOR FORM */}
       <Card1>
-        {data ? (
-          <Formik
-            onSubmit={handleFormSubmit}
-            enableReinitialize={true}
-            initialValues={{
-              title: data.title ? data.title : "",
-              sell_price: data.sell_price ? data.sell_price : "",
-              trade_description: data.trade_description
-                ? data.trade_description
-                : "",
-              sell_state: data.sell_state ? data.sell_state : "",
-              image: data.image
-                ? data.image
-                : "/assets/images/products/24.Revel2020.png",
-            }}
-            validationSchema={checkoutSchema}
-          >
-            {({
-              values,
-              errors,
-              touched,
-              handleChange,
-              handleBlur,
-              handleSubmit,
-              setFieldValue,
-            }) => (
-              <form onSubmit={handleSubmit}>
-                <Stack spacing={3} mb={3}>
-                  <Grid container spacing={3}>
-                    <Grid item md={6} xs={12} style={{ textAlign: "center" }}>
-                      <img
-                        name='image'
-                        src={values.image}
-                        style={{
-                          width: "200px",
-                          objectFit: "contain",
-                          margin: "0 auto",
-                        }}
-                      />
-                    </Grid>
-                    <Grid item md={6} xs={12}>
-                      <TextField
-                        style={{
-                          marginBottom: "1rem",
-                        }}
-                        disabled={values.sell_state !== "등록대기"}
-                        fullWidth
-                        name='title'
-                        label='책 제목'
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        value={values.title}
-                        error={!!touched.title && !!errors.title}
-                        helperText={touched.title && errors.title}
-                      />
+        {tradeData && (
+          <>
+            <Paragraph fontWeight={700} mb={2}>
+              필수 입력 정보
+            </Paragraph>
 
-                      <TextField
-                        fullWidth
-                        style={{
-                          marginBottom: "1rem",
-                        }}
-                        disabled={values.sell_state !== "등록대기"}
-                        label='판매가'
-                        name='sell_price'
-                        onBlur={handleBlur}
-                        value={values.sell_price}
-                        onChange={handleChange}
-                        error={!!touched.sell_price && !!errors.sell_price}
-                        helperText={touched.sell_price && errors.sell_price}
-                      />
-
-                      {values.sell_state === "판매중" && confirmCode === "" ? (
-                        <Button
+            <Formik
+              onSubmit={handleFormSubmit}
+              initialValues={bookCard}
+              validationSchema={checkoutSchema}
+            >
+              {({
+                values,
+                errors,
+                touched,
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                setFieldValue,
+              }) => (
+                <form onSubmit={handleSubmit}>
+                  <Stack spacing={3} mb={3}>
+                    <Grid container spacing={3}>
+                      <Grid item md={6} xs={12}>
+                        <TextField
                           fullWidth
-                          onClick={createConfirm}
-                          variant='contained'
-                          color='primary'
+                          name="trade_title"
+                          label="제목"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          value={values.trade_title}
+                          error={!!touched.trade_title && !!errors.trade_title}
+                          helperText={touched.trade_title && errors.trade_title}
+                        />
+                      </Grid>
+
+                      <Grid item md={6} xs={12}>
+                        <TextField
+                          fullWidth
+                          label="판매가"
+                          name="sell_price"
+                          onBlur={handleBlur}
+                          value={values.sell_price}
+                          onChange={handleChange}
+                          error={!!touched.sell_price && !!errors.sell_price}
+                          helperText={touched.sell_price && errors.sell_price}
+                        />
+                      </Grid>
+
+                      <Grid item md={12} xs={12}>
+                        <TextField
+                          rows={6}
+                          multiline
+                          fullWidth
+                          color="info"
+                          name="trade_description"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          value={values.trade_description}
+                          label="책소개"
+                          error={Boolean(errors.trade_description && touched.trade_description)}
+                          helperText={touched.trade_description && errors.trade_description}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Stack>
+
+                  <Divider variant="middle" />
+
+                  <Paragraph fontWeight={700} mt={2}>
+                    추가 입력 정보
+                  </Paragraph>
+                  <Paragraph fontWeight={500} fontSize={12} mb={2} style={{ color: "#D23F57" }}>
+                    정확한 책 정보를 입력하려면 ISBN을 검색하세요.
+                  </Paragraph>
+
+                  <Stack spacing={3} mb={3}>
+                    <TextField
+                      color="info"
+                      type="text"
+                      name="Isbn"
+                      label="ISBN"
+                      onChange={handleOnChange}
+                    />
+                    <Button onClick={handleIsbnSubmit} color="primary" variant="contained" disabled={isbn === ''}>
+                      검색
+                    </Button>
+                  </Stack>
+
+                  <Divider variant="middle" />
+
+                  {bookInfo && (
+                    <>
+                      <Paragraph fontWeight={700} mt={2}>
+                        도서 정보
+                      </Paragraph>
+
+                      <Stack spacing={3} mb={3}>
+                        <img
+                          name="image"
+                          src={bookInfo.image || ''}
+                          style={{
+                            width: '250px', objectFit: 'contain', margin: '0 auto', border: '1px solid #eee'
+                          }}
+                        />
+
+                        <TextField
+                          color="info"
+                          name="title"
+                          label="도서명"
+                          value={bookInfo.title || ''}
+                          readOnly
+                        />
+
+                        <TextField
+                          color="info"
+                          name="publisher"
+                          label="출판사"
+                          onChange={handleChange}
+                          value={bookInfo.publisher || ''}
+                        />
+
+                        <TextField
+                          fullWidth
+                          color="info"
+                          name="pubdate"
+                          placeholder="발행일"
+                          label="발행일"
+                          onChange={handleChange}
+                          value={bookInfo.pubdate || ''}
                         >
-                          예약확인증 발급
-                        </Button>
-                      ) : (
-                        <></>
-                      )}
+                        </TextField>
 
-                      {values.sell_state !== "판매완료" &&
-                        confirmCode !== "" ? (
-                        <>
-                          <div>구매자에게 아래 예약번호를 공유해주세요.</div>
-                          <div>{confirmCode}</div>
-                          <QRCode value={confirmCode} />
-                        </>
-                      ) : (
-                        <></>
-                      )}
-                    </Grid>
+                        <TextField
+                          rows={6}
+                          multiline
+                          fullWidth
+                          color="info"
+                          name="description"
+                          onChange={handleChange}
+                          value={bookInfo.description || ''}
+                          label="책소개"
+                        />
 
-                    <Grid item md={12} xs={12}>
-                      <TextField
-                        rows={6}
-                        multiline
-                        fullWidth
-                        color='info'
-                        size='medium'
-                        name='trade_description'
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        value={values.trade_description}
-                        label='책소개'
-                        error={Boolean(
-                          errors.trade_description && touched.trade_description
-                        )}
-                        helperText={
-                          touched.trade_description && errors.trade_description
-                        }
-                      />
-                    </Grid>
-                    {/* <Grid item md={12} xs={12}>
-                      <DropZone
-                        onChange={(files) => console.log(files)}
-                        title="상품 이미지를 등록하세요"
-                      // imageSize="We had to limit height to maintian consistancy. Some device both side of the banner might cropped for height limitation."
-                      />
-                    </Grid> */}
-                  </Grid>
-                </Stack>
+                        <TextField
+                          color="info"
+                          name="price"
+                          label="정가"
+                          onChange={handleChange}
+                          value={bookInfo.price || ''}
+                        />
+                      </Stack>
+                    </>
+                  )}
 
-                {sellStatus === "판매중" && (
-                  <Button type='submit' variant='contained' color='primary'>
+                  <Button type="submit" variant="contained" color="primary">
                     저장
                   </Button>
-                )}
-              </form>
-            )}
-          </Formik>
-        ) : (
-          <H5>Loading...</H5>
+                </form>
+              )}
+            </Formik>
+          </>
         )}
+
+
       </Card1>
     </CustomerDashboardLayout>
   );
 };
 
-export default ProfileEditor;
+export default withAuth(ProfileEditor)
