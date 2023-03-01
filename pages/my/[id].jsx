@@ -19,6 +19,9 @@ const bookCard = {
   trade_title: "",
   sell_price: 0 || "",
   trade_description: "",
+  bank_name: "",
+  bank_code: "",
+  bank_user: "",
 }
 // ===========================================================
 const ProfileEditor = () => {
@@ -43,17 +46,27 @@ const ProfileEditor = () => {
   const checkoutSchema = yup.object().shape({
     trade_title: yup.string().required("책 제목을 입력하세요."),
     sell_price: yup.string().required("가격을 입력하세요."),
+    bank_name: yup.string().required("은행명을 입력하세요."),
+    bank_code: yup.string().required("계좌번호를 입력하세요."),
+    bank_user: yup.string().required("예금주를 입력하세요."),
   });
 
   const handleFormSubmit = (values) => {
     const newObj = {
+      ...bookCard,
+      ...bookInfo,
       trade_title: values.trade_title,
       seller_uid: parseInt(user_id),
       sell_price: parseInt(values.sell_price),
       trade_description: values.trade_description,
+      bank_name: values.bank_name,
+      bank_code: values.bank_code.toString(),
+      bank_user: values.bank_user,
+      action: 'update'
     }
-    bookCard = { ...bookCard, ...newObj, ...bookInfo, action: 'update' }
-    postNewTrade()
+    // bookCard = { ...bookCard, ...newObj, ...bookInfo, action: 'update' }
+    console.log(newObj)
+    postNewTrade(newObj)
   };
 
   const handleIsbnSubmit = () => {
@@ -76,7 +89,6 @@ const ProfileEditor = () => {
         setTradeData(data[0]);
         setBookInfo(data[0])
         setSellStatus(data[0].sell_state);
-        console.log(data, bookCard);
         setLoading(false);
       });
   }
@@ -116,11 +128,11 @@ const ProfileEditor = () => {
       });
   };
 
-  const postNewTrade = async () => {
+  const postNewTrade = async (newObj) => {
     await axios
       .post(
         `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/trade`,
-        bookCard
+        newObj
       )
       .then((response) => {
         if (response.status === 200) {
@@ -221,6 +233,46 @@ const ProfileEditor = () => {
                           label="책소개"
                           error={Boolean(errors.trade_description && touched.trade_description)}
                           helperText={touched.trade_description && errors.trade_description}
+                        />
+                      </Grid>
+
+                      <Grid item md={4} xs={12}>
+                        <TextField
+                          fullWidth
+                          name="bank_name"
+                          label="은행명"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          value={values.bank_name}
+                          error={!!touched.bank_name && !!errors.bank_name}
+                          helperText={touched.bank_name && errors.bank_name}
+                        />
+                      </Grid>
+
+                      <Grid item md={4} xs={12}>
+                        <TextField
+                          fullWidth
+                          type="number"
+                          label="계좌번호"
+                          placeholder="숫자만 입력하세요"
+                          name="bank_code"
+                          onBlur={handleBlur}
+                          value={values.bank_code}
+                          onChange={handleChange}
+                          error={!!touched.bank_code && !!errors.bank_code}
+                          helperText={touched.bank_code && errors.bank_code}
+                        />
+                      </Grid>
+                      <Grid item md={4} xs={12}>
+                        <TextField
+                          fullWidth
+                          label="예금주"
+                          name="bank_user"
+                          onBlur={handleBlur}
+                          value={values.bank_user}
+                          onChange={handleChange}
+                          error={!!touched.bank_user && !!errors.bank_user}
+                          helperText={touched.bank_user && errors.bank_user}
                         />
                       </Grid>
                     </Grid>

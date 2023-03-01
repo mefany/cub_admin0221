@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
 import { Pagination } from "@mui/material";
 import {
   Box,
@@ -32,19 +31,19 @@ const StyledChip = styled(Chip)(({ theme, green }) => ({
 }));
 
 const Orders = () => {
-  const router = useRouter();
   const [data, setData] = useState(null);
+  const [user_id, setUserId] = useState('')
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!router.isReady) return;
     setLoading(true);
-    getUserInfo(router.query.id)
-  }, [router]);
+    setUserId(sessionStorage.getItem("user_uid"))
+    getUserInfo(user_id)
+  }, []);
 
   const getUserInfo = (user_uid) => {
     fetch(
-      `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/trade?user_uid=15`
+      `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/trade?user_uid=${user_uid}`
     )
       .then(res => res.json())
       .then(data => {
