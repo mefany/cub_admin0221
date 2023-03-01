@@ -1,14 +1,13 @@
 import Link from "next/link";
 import { Formik } from "formik";
 import * as yup from "yup";
-import { CameraEnhance, Person } from "@mui/icons-material";
-import { Avatar, Box, Button, Grid, TextField, Stack, Divider } from "@mui/material";
-import { H3, Paragraph } from "components/Typography";
+import { Person } from "@mui/icons-material";
+import { Button, Grid, TextField, Stack, Divider } from "@mui/material";
+import { Paragraph } from "components/Typography";
 import Card1 from "components/Card1";
 import UserDashboardHeader from "components/header/UserDashboardHeader";
 import CustomerDashboardLayout from "components/layouts/customer-dashboard";
 import CustomerDashboardNavigation from "components/layouts/customer-dashboard/Navigations";
-import DropZone from "components/DropZone";
 import { withAuth } from "../../hocs/withAuth ";
 import axios from "axios";
 import { useRouter } from "next/router";

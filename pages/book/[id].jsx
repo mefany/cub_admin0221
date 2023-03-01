@@ -23,6 +23,7 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
   },
 })); // ===============================================================
 
+const bookingUser = []
 // ===============================================================
 const ProductDetails = props => {
   const router = useRouter();
@@ -31,7 +32,7 @@ const ProductDetails = props => {
   const [book, setBook] = useState(null);
   const [relatedBook, setRelatedBook] = useState(null);
   const [isLoading, setLoading] = useState(false);
-  const [bookingUser, setBookingUser] = useState(null);
+  // const [bookingUser, setBookingUser] = useState(null);
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -66,8 +67,9 @@ const ProductDetails = props => {
     );
     const users = await res.data;
     if (users.length > 0) {
-      setBookingUser(users);
+      bookingUser = users
     }
+    console.log('getBookingUser', bookingUser)
   };
 
   const postBookingUser = async (trade_uid, user_uid) => {

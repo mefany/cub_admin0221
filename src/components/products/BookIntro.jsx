@@ -1,16 +1,15 @@
 import Link from "next/link";
-import Image from "next/image";
-
-import { useState, useEffect } from "react";
-import { Add, Remove } from "@mui/icons-material";
-import { Avatar, Box, Button, Grid, MenuItem, TextField } from "@mui/material";
+import { useEffect } from "react";
+import { Box, Grid } from "@mui/material";
 import LazyImage from "components/LazyImage";
 import BazaarRating from "components/BazaarRating";
-import { H1, H2, H3, H6 } from "components/Typography";
-import { useAppContext } from "contexts/AppContext";
-import { FlexBox, FlexRowCenter } from "../flex-box";
-//================================================================
+import { H1, H2, H6 } from "components/Typography";
+import BookIntroSeller from "components/products/BookIntroSeller";
+import BookIntroBuyer from "components/products/BookIntroBuyer";
+import { FlexBox } from "../flex-box";
 
+//================================================================
+const userType = ''
 // ================================================================
 const BookIntro = ({ data, bookingUser }) => {
   const {
@@ -23,55 +22,18 @@ const BookIntro = ({ data, bookingUser }) => {
     user_uid,
     nickname,
   } = data;
-  const { state, dispatch } = useAppContext();
-  const [selectedImage, setSelectedImage] = useState(0); // CHECK PRODUCT EXIST OR NOT IN THE CART
-
-  const [isSeller, setIsSeller] = useState(false);
-  const [isBuyer, setIsBuyer] = useState(false);
-  const [isGuest, setIsGuest] = useState(false);
-  const [isBooking, setIsBooking] = useState(false);
 
   useEffect(() => {
     if (sessionStorage.getItem("token") === null) {
-      setIsGuest(true);
+      userType = 'guest'
     } else {
-      if (user_uid === sessionStorage.getItem("user_uid")) {
-        setIsSeller(true);
+      if (user_uid == sessionStorage.getItem("user_uid")) {
+        userType = 'seller'
       } else {
-        setIsBuyer(true);
+        userType = 'buyer'
       }
     }
-
-    if (bookingUser !== null && isBuyer) {
-      bookingUser.forEach(user => {
-        if (user.user_uid === sessionStorage.getItem("user_uid")) {
-          setIsBooking(true);
-        }
-      });
-    }
-    console.log("isBooking", isBooking);
   }, []);
-
-  const cartItem = state.cart.find(item => item.trade_uid === trade_uid); // HANDLE SELECT IMAGE
-
-  const handleImageClick = ind => () => setSelectedImage(ind); // HANDLE CHANGE CART
-
-  const handleCartAmountChange = amount => () => {
-    dispatch({
-      type: "CHANGE_CART_AMOUNT",
-      payload: {
-        price,
-        qty: amount,
-        name: title,
-        imgUrl: image,
-        trade_uid,
-      },
-    });
-  };
-
-  const handleOnChange = e => {
-    console.log(e.target.value);
-  };
 
   return (
     <Box width='100%'>
@@ -87,37 +49,6 @@ const BookIntro = ({ data, bookingUser }) => {
               src={image}
             />
           </FlexBox>
-
-          {/* <FlexBox overflow="auto">
-            {images.map((url, ind) => (
-              <FlexRowCenter
-                key={ind}
-                width={64}
-                height={64}
-                minWidth={64}
-                bgcolor="white"
-                border="1px solid"
-                borderRadius="10px"
-                ml={ind === 0 ? "auto" : 0}
-                style={{
-                  cursor: "pointer",
-                }}
-                onClick={handleImageClick(ind)}
-                mr={ind === images.length - 1 ? "auto" : "10px"}
-                borderColor={
-                  selectedImage === ind ? "primary.main" : "grey.400"
-                }
-              >
-                <Avatar
-                  src={url}
-                  variant="square"
-                  sx={{
-                    height: 40,
-                  }}
-                />
-              </FlexRowCenter>
-            ))}
-          </FlexBox> */}
         </Grid>
 
         <Grid item md={6} xs={12} alignItems='center'>
@@ -148,50 +79,18 @@ const BookIntro = ({ data, bookingUser }) => {
             <Box color='inherit'>{sell_state}</Box>
           </Box>
 
-          {isSeller && bookingUser.length > 0 && (
-            <Grid container>
-              <Grid item>
-                <TextField
-                  select
-                  // fullWidth
-                  size='small'
-                  variant='outlined'
-                  defaultValue={bookingUser[0].nickname}
-                  onChange={handleOnChange}
-                >
-                  {bookingUser.map(user => (
-                    <MenuItem value={user.nickname} key={user.booking_uid}>
-                      {user.nickname}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-
-              <Grid item alignItems='stretch' style={{ display: "flex" }}>
-                <Button color='primary' variant='contained'>
-                  예약확정
-                </Button>
-              </Grid>
-            </Grid>
-          )}
-
-          {!isSeller && !isBooking ? (
-            <Button
-              color='primary'
-              variant='contained'
-              onClick={handleCartAmountChange(1)}
-            >
-              구매예약
-            </Button>
-          ) : (
-            <Button
-              color='primary'
-              variant='contained'
-              onClick={handleCartAmountChange(1)}
-            >
-              예약취소
-            </Button>
-          )}
+          {(() => {
+            switch (userType) {
+              case "seller":
+                return <BookIntroSeller bookingUser={bookingUser}></BookIntroSeller>;
+              case "buyer":
+                return <BookIntroBuyer bookingUser={bookingUser} trade_uid={trade_uid}></BookIntroBuyer>
+              case "guest":
+                return <p>로그인 후 이용 가능합니다.</p>;
+              default:
+                return null;
+            }
+          })()}
 
           <FlexBox alignItems='center' mb={2}>
             <Box>판매자:</Box>
@@ -206,20 +105,5 @@ const BookIntro = ({ data, bookingUser }) => {
     </Box>
   );
 };
-
-const sortOptions = [
-  {
-    label: "낮은가격순",
-    value: "asc",
-  },
-  {
-    label: "높은가격순",
-    value: "desc",
-  },
-  {
-    label: "최신순",
-    value: "latest",
-  },
-];
 
 export default BookIntro;
