@@ -72,17 +72,6 @@ const ProductDetails = props => {
     console.log('getBookingUser', bookingUser)
   };
 
-  const postBookingUser = async (trade_uid, user_uid) => {
-    const res = await axios.get(
-      `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/booking/`,
-      {
-        trade_uid: trade_uid,
-        user_uid: user_uid,
-      }
-    );
-    console.log(res);
-  };
-
   return (
     <ShopLayout1>
       <Container

@@ -94,11 +94,12 @@ const BookIntro = ({ data, bookingUser }) => {
 
           <FlexBox alignItems='center' mb={2}>
             <Box>판매자:</Box>
-            <Link href='/shops/fdfdsa'>
+            <H6 ml={1}>{nickname}</H6>
+            {/* <Link href='/shops/fdfdsa'>
               <a>
                 <H6 ml={1}>{nickname}</H6>
               </a>
-            </Link>
+            </Link> */}
           </FlexBox>
         </Grid>
       </Grid>
