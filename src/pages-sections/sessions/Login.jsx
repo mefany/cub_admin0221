@@ -85,10 +85,40 @@ const Login = () => {
 
   function kakaoLogin() {
     console.log("kakaoLogin");
-    Kakao.Auth.authorize({
-      redirectUri: "http://localhost:3000/kakao",
-    });
+    reqKakaoLogin()
+    // Kakao.Auth.authorize({
+    //   redirectUri: "http://localhost:3000/kakao",
+    // });
   }
+
+  const reqKakaoLogin = async () => {
+    await axios
+      .post(
+        `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/login/kakao`,
+        {
+
+        }
+      )
+      .then(response => {
+        console.log(response.data)
+        location.href = response.data
+        // const { data } = response.data
+
+        // redirect(response.data)
+        // if (response.status === 200) {
+        //   sessionStorage.setItem("token", data[0].token);
+        //   sessionStorage.setItem("user_uid", data[0].user_uid);
+        //   redirect();
+        // }
+      })
+      .catch(error => {
+        // console.log(error);
+        // if (error.response.status === 401) {
+        //   alert("이메일 주소 또는 비밀번호를 확인해주세요.");
+        // }
+      });
+  };
+
 
   const sendForm = async values => {
     await axios

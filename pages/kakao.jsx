@@ -3,34 +3,61 @@
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useCallback, useEffect } from "react";
+import axios from "axios";
 
 const Kakao = () => {
   const router = useRouter();
   const { code: authCode, error: kakaoServerError } = router.query;
 
-  const loginHandler = useCallback(
-    async code => {
-      // 백엔드에 전송
-      const response = await fetch("/api/users/kakao-login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          authCode: code,
-        }),
-      }).then(res => res.json());
+  // const loginHandler = useCallback(
+  //   async code => {
+  //     // 백엔드에 전송
+  //     const response = await fetch("/api/users/kakao-login", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         authCode: code,
+  //       }),
+  //     }).then(res => res.json());
 
-      if (response.ok) {
-        // 성공하면 홈으로 리다이렉트
-        router.push("/");
-      } else {
-        // 실패하면 에러 페이지로 리다이렉트
-        router.push("/notifications/authentication-failed");
-      }
-    },
-    [router]
-  );
+  //     if (response.ok) {
+  //       // 성공하면 홈으로 리다이렉트
+  //       router.push("/");
+  //     } else {
+  //       // 실패하면 에러 페이지로 리다이렉트
+  //       router.push("/notifications/authentication-failed");
+  //     }
+  //   },
+  //   [router]
+  // );
+
+
+  const loginHandler = async (code) => {
+    await axios
+      .get(
+        `https://i9nwbiqoc6.execute-api.ap-northeast-2.amazonaws.com/test/login/kakao?code=${code}`,
+      )
+      .then(response => {
+        console.log(response)
+        // location.href = response.data
+        // const { data } = response.data
+
+        // redirect(response.data)
+        // if (response.status === 200) {
+        //   sessionStorage.setItem("token", data[0].token);
+        //   sessionStorage.setItem("user_uid", data[0].user_uid);
+        //   redirect();
+        // }
+      })
+      .catch(error => {
+        // console.log(error);
+        // if (error.response.status === 401) {
+        //   alert("이메일 주소 또는 비밀번호를 확인해주세요.");
+        // }
+      });
+  };
 
   useEffect(() => {
     if (authCode) {
